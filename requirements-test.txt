@@ -1,5 +1,9 @@
-locust~=1.6
-coverage~=5.5
-pytest~=6.2.5
-pytest-cov~=2.12.1
-mockito~=1.2.2
+coverage==7.5.0
+ipdb==0.13.13
+ipython==8.12.3
+locust==2.25.0
+mockito==1.5.0
+pre-commit==3.5.0
+pre-commit-hooks==4.6.0
+pytest==8.1.2
+pytest-cov==5.0.0
