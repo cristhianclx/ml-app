@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  api:
+    build: .
+    command: /bin/bash -c "make install &&
+                           make run"
+    environment:
+      - PORT=8000
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/code
+  api-bash:
+    build: .
+    command: /bin/bash -c "make install &&
+                           make run"
+    environment:
+      - PORT=8000
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/code
+  api-test:
+    build: .
+    command: /bin/bash -c "make install &&
+                           make model-test &&
+                           make api-test"
+    environment:
+      - PORT=8000
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/code
+volumes:
+  data: {}
