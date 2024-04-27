@@ -40,6 +40,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
+
 @app.get("/health", status_code=200)
 async def get_health() -> dict:
     return {"status": "OK"}
