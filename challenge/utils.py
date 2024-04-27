@@ -1,5 +1,10 @@
 from datetime import datetime
 
+import numpy as np
+import pandas as pd
+
+from .constants import THRESHOLD_IN_MINUTES, TOP_10_FEATURES
+
 
 def get_period_day(date):
     date_time = datetime.strptime(date, "%Y-%m-%d %H:%M:%S").time()
@@ -46,3 +51,24 @@ def get_min_diff(data):
     fecha_i = datetime.strptime(data["Fecha-I"], "%Y-%m-%d %H:%M:%S")
     min_diff = ((fecha_o - fecha_i).total_seconds()) / 60
     return min_diff
+
+
+def get_delay(data):
+    return np.where(data["min_diff"] > THRESHOLD_IN_MINUTES, 1, 0)
+
+
+def normalize(data, add_missing_columns=False):
+    features = pd.concat(
+        [
+            pd.get_dummies(data["OPERA"], prefix="OPERA"),
+            pd.get_dummies(data["TIPOVUELO"], prefix="TIPOVUELO"),
+            pd.get_dummies(data["MES"], prefix="MES"),
+        ],
+        axis=1,
+    )
+    if add_missing_columns:
+        for t in TOP_10_FEATURES:
+            if t not in features:
+                features[t] = False
+    features = features[TOP_10_FEATURES]
+    return features

@@ -2,12 +2,10 @@ import os
 from typing import List, Tuple, Union
 
 import joblib
-import numpy as np
 import pandas as pd
 from xgboost import XGBClassifier
 
-from .constants import THRESHOLD_IN_MINUTES, TOP_10_FEATURES
-from .utils import get_min_diff, get_period_day, is_high_season
+from .utils import get_delay, get_min_diff, get_period_day, is_high_season, normalize
 
 
 class DelayModel:
@@ -37,16 +35,8 @@ class DelayModel:
         data["period_day"] = data["Fecha-I"].apply(get_period_day)
         data["high_season"] = data["Fecha-I"].apply(is_high_season)
         data["min_diff"] = data.apply(get_min_diff, axis=1)
-        data["delay"] = np.where(data["min_diff"] > THRESHOLD_IN_MINUTES, 1, 0)
-        features = pd.concat(
-            [
-                pd.get_dummies(data["OPERA"], prefix="OPERA"),
-                pd.get_dummies(data["TIPOVUELO"], prefix="TIPOVUELO"),
-                pd.get_dummies(data["MES"], prefix="MES"),
-            ],
-            axis=1,
-        )
-        features = features[TOP_10_FEATURES]
+        data["delay"] = get_delay(data)
+        features = normalize(data)
         if target_column is not None:
             return features, data[["delay"]]
         return features
