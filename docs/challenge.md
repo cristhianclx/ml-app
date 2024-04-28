@@ -30,9 +30,15 @@ For pipelines in CI, I added a test step and a infrastructure-plan (using terraf
 For pipelines in CD, I added a test step, infrastructure, create a docker image, push to Google Artifact Registry and update service in Cloud Run. This will happen in PR to main branch.
 
 
+### stress
+
+Added URL `https://server.ml-app.demo.pe` to manage stress test, Cloud Run with concurrency of 100.
+
+
 ### extras
 
 Added some basic validations and linters (black, flake8, isort).
 Added pre-commit rules and pre-commit hooks.
 Update requirements to latest versions (it's better to be updated for security fixes).
 Added Dockerfile and docker-compose for management: `docker-compose run --service-ports api`.
+Added terraform with GCP to manage infrastructure.

@@ -5,12 +5,6 @@ on:
     branches:
     - main
 
-env:
-  NAME: server-ml-app-demo-pe
-  SERVICE: server.ml-app.demo.pe
-  REGION: us-east1
-  LOCATION: us
-
 jobs:
   test:
     runs-on: ubuntu-latest
