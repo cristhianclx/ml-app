@@ -28,7 +28,7 @@ jobs:
       with:
         terraform_version: 1.8.2
     - name: stage
-      run: echo "STAGE=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      run: echo "STAGE=${GITHUB_BASE_REF##*/}" >> $GITHUB_ENV
     - name: run
       run: |
         cd ./infrastructure/
