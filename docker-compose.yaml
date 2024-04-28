@@ -10,6 +10,7 @@ services:
       - 8000:8000
     volumes:
       - .:/code
+      - ./data:/data
   api-bash:
     build: .
     command: /bin/bash -c "make install &&
@@ -20,6 +21,7 @@ services:
       - 8000:8000
     volumes:
       - .:/code
+      - ./data:/data
   api-test:
     build: .
     command: /bin/bash -c "make install &&
@@ -31,5 +33,6 @@ services:
       - 8000:8000
     volumes:
       - .:/code
+      - ./data:/data
 volumes:
   data: {}

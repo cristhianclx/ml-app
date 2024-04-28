@@ -14,7 +14,6 @@ RUN \
     curl \
     git \
     make \
-    sudo \
     vim \
   ' \
   && apt-get update -y \
@@ -24,10 +23,6 @@ RUN \
   && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /usr/share/locale \
   && mkdir -p $HOME \
   && useradd $USERNAME --shell /bin/bash --home-dir $HOME \
-  && chown -R $USERNAME:$USERNAME $HOME \
-  && echo "$USERNAME:$PASSWORD" | chpasswd \
-  && usermod -a -G sudo $USERNAME \
-  && echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers \
   && chown -R $USERNAME:$USERNAME $HOME \
   && mkdir -p $DIRECTORY \
   && chown -R $USERNAME:$USERNAME $DIRECTORY \
@@ -46,4 +41,4 @@ WORKDIR $DIRECTORY
 
 COPY --chown=$USERNAME:$USERNAME . $DIRECTORY
 
-CMD ["uvicorn", "challenge:application", "--host", "0.0.0.0", "--port", $PORT]
+CMD uvicorn challenge:application --host 0.0.0.0 --port $PORT

@@ -12,7 +12,7 @@ class DelayModel:
 
     def __init__(self):
         self._model = None  # Model should be saved in this attribute.
-        self._model_path = "./model.pkl"
+        self._model_path = "/data/model.pkl"
         self._model_cache = True
 
     def preprocess(
