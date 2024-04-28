@@ -1,0 +1,66 @@
+name: CD
+
+on:
+  push:
+    branches:
+    - main
+
+env:
+  NAME: server-ml-app-demo-pe
+  SERVICE: server.ml-app.demo.pe
+  REGION: us-east1
+  LOCATION: us
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: run
+      run: docker-compose run api-test
+  infrastructure:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: configure-gcp-credentials
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+    - name: terraform-setup
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.8.2
+    - name: stage
+      run: echo "STAGE=${GITHUB_REF##*/}" >> $GITHUB_ENV
+    - name: run
+      run: |
+        cd ./infrastructure/
+        terraform fmt -check -diff -recursive -no-color
+        terraform init -backend=true -get=true -reconfigure -upgrade
+        terraform workspace select -or-create $STAGE
+        terraform plan -no-color -refresh=true -var-file=./vars/$STAGE.tfvars
+        terraform apply -no-color -auto-approve -var-file=./vars/$STAGE.tfvars
+  code:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+    - name: stage
+      run: echo "STAGE=${GITHUB_REF##*/}" >> $GITHUB_ENV
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: configure-gcp-credentials
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+    - name: gcloud-setup
+      uses: google-github-actions/setup-gcloud@v1
+    - name: docker-setup
+      run: gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+    - name: push-to-gcr
+      run: |
+        docker build --tag $REGION-docker.pkg.dev/$NAME/docker-$NAME/$SERVICE:$STAGE .
+        docker push $REGION-docker.pkg.dev/$NAME/docker-$NAME/$SERVICE:$STAGE
+        gcloud run services update $NAME --image=$REGION-docker.pkg.dev/$NAME/docker-$NAME/$SERVICE:$STAGE --region=$REGION

@@ -14,7 +14,6 @@ RUN \
     curl \
     git \
     make \
-    sudo \
     vim \
   ' \
   && apt-get update -y \
@@ -25,12 +24,10 @@ RUN \
   && mkdir -p $HOME \
   && useradd $USERNAME --shell /bin/bash --home-dir $HOME \
   && chown -R $USERNAME:$USERNAME $HOME \
-  && echo "$USERNAME:$PASSWORD" | chpasswd \
-  && usermod -a -G sudo $USERNAME \
-  && echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers \
-  && chown -R $USERNAME:$USERNAME $HOME \
   && mkdir -p $DIRECTORY \
   && chown -R $USERNAME:$USERNAME $DIRECTORY \
+  && mkdir -p /data \
+  && chown -R $USERNAME:$USERNAME /data \
   && echo "set mouse-=a" >> /root/.vimrc \
   && echo "set mouse-=a" >> $HOME/.vimrc
 
@@ -46,4 +43,4 @@ WORKDIR $DIRECTORY
 
 COPY --chown=$USERNAME:$USERNAME . $DIRECTORY
 
-CMD ["uvicorn", "challenge:application", "--host", "0.0.0.0", "--port", $PORT]
+CMD uvicorn challenge:application --host 0.0.0.0 --port $PORT

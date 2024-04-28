@@ -16,6 +16,20 @@ If validation is failing it raises 400 HTTP error, using FastAPI validation.
 Also, I added `normalize` function to normalize data that I can pass to model.
 
 
+### infrastructure
+
+I added a folder called `infrastructure` in this folder I did a setup with terraform to deploy in GCP using Cloud Run.
+Also, I added GCP Artifact Registry to store docker image that I'm generating each time.
+And to manage DNS, I added a mapped domain in Cloud Run.
+For better performance I added cloud storage to manage model generated, so we don't generate each time.
+
+
+### pipelines
+
+For pipelines in CI, I added a test step and a infrastructure-plan (using terraform) to see what is going to happen in PR. This will happen only in main branch.
+For pipelines in CD, I added a test step, infrastructure, create a docker image, push to Google Artifact Registry and update service in Cloud Run. This will happen in PR to main branch.
+
+
 ### extras
 
 Added some basic validations and linters (black, flake8, isort).
