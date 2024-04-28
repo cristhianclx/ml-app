@@ -14,14 +14,14 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    needs: [infrastructure]
     steps:
     - name: checkout
       uses: actions/checkout@v4
     - name: run
       run: docker-compose run api-test
-  infrastructure:
+  infrastructure-plan:
     runs-on: ubuntu-latest
+    needs: [test]
     steps:
     - name: checkout
       uses: actions/checkout@v4
@@ -42,24 +42,3 @@ jobs:
         terraform init -backend=true -get=true -reconfigure -upgrade
         terraform workspace select -or-create $STAGE
         terraform plan -no-color -refresh=true -var-file=./vars/$STAGE.tfvars
-  code:
-    runs-on: ubuntu-latest
-    needs: [infrastructure]
-    steps:
-    - name: stage
-      run: echo "STAGE=main" >> $GITHUB_ENV
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: configure-gcp-credentials
-      uses: google-github-actions/auth@v2
-      with:
-        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
-    - name: gcloud-setup
-      uses: google-github-actions/setup-gcloud@v1
-    - name: docker-setup
-      run: gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
-    - name: push-to-gcr
-      run: |
-        docker build --tag $REGION-docker.pkg.dev/$NAME/docker-$NAME/$SERVICE:$STAGE .
-        docker push $REGION-docker.pkg.dev/$NAME/docker-$NAME/$SERVICE:$STAGE
-        gcloud run services update $NAME --image=$REGION-docker.pkg.dev/$NAME/docker-$NAME/$SERVICE:$STAGE --region=$REGION

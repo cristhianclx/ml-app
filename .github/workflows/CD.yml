@@ -14,7 +14,6 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    needs: [infrastructure]
     steps:
     - name: checkout
       uses: actions/checkout@v4
@@ -22,6 +21,7 @@ jobs:
       run: docker-compose run api-test
   infrastructure:
     runs-on: ubuntu-latest
+    needs: [test]
     steps:
     - name: checkout
       uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
         terraform apply -no-color -auto-approve -var-file=./vars/$STAGE.tfvars
   code:
     runs-on: ubuntu-latest
-    needs: [infrastructure]
+    needs: [test]
     steps:
     - name: stage
       run: echo "STAGE=${GITHUB_REF##*/}" >> $GITHUB_ENV

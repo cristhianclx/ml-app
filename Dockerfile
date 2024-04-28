@@ -26,9 +26,10 @@ RUN \
   && chown -R $USERNAME:$USERNAME $HOME \
   && mkdir -p $DIRECTORY \
   && chown -R $USERNAME:$USERNAME $DIRECTORY \
+  && mkdir -p /data \
+  && chown -R $USERNAME:$USERNAME /data \
   && echo "set mouse-=a" >> /root/.vimrc \
-  && echo "set mouse-=a" >> $HOME/.vimrc \
-  && mkdir -p /data
+  && echo "set mouse-=a" >> $HOME/.vimrc
 
 USER $USERNAME
 
