@@ -64,3 +64,5 @@ jobs:
         docker build --tag $REGION-docker.pkg.dev/$NAME/docker-$NAME/$SERVICE:$STAGE .
         docker push $REGION-docker.pkg.dev/$NAME/docker-$NAME/$SERVICE:$STAGE
         gcloud run services update $NAME --image=$REGION-docker.pkg.dev/$NAME/docker-$NAME/$SERVICE:$STAGE --region=$REGION
+    - name: run-stress
+      run: docker-compose run api-test-stress

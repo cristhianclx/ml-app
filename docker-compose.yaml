@@ -14,7 +14,7 @@ services:
   api-bash:
     build: .
     command: /bin/bash -c "make install &&
-                           make run"
+                           /bin/bash"
     environment:
       - PORT=8000
     ports:
@@ -27,6 +27,14 @@ services:
     command: /bin/bash -c "make install &&
                            make model-test &&
                            make api-test"
+    environment:
+      - PORT=8000
+    ports:
+      - 8000:8000
+  api-test-stress:
+    build: .
+    command: /bin/bash -c "make install &&
+                           make stress-test"
     environment:
       - PORT=8000
     ports:

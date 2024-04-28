@@ -13,7 +13,7 @@ class TestBase(unittest.TestCase):
         response = self.client.get("/health")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"status": "OK"})
-        
+
 
 class TestBatchPipeline(unittest.TestCase):
     def setUp(self):
